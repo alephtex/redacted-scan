@@ -31,6 +31,8 @@ import org.fairscan.app.ui.NavigationState
 import org.fairscan.app.ui.Screen
 import org.fairscan.app.ui.state.DocumentUiModel
 
+import kotlinx.coroutines.flow.combine
+
 class MainViewModel(val imageRepository: ImageRepository, launchMode: LaunchMode): ViewModel() {
 
     private val _navigationState = MutableStateFlow(NavigationState.initial(launchMode))
@@ -38,8 +40,10 @@ class MainViewModel(val imageRepository: ImageRepository, launchMode: LaunchMode
         .stateIn(viewModelScope, SharingStarted.Eagerly, _navigationState.value.current)
 
     private val _pageIds = MutableStateFlow(imageRepository.imageIds())
+    private val _modificationCount = MutableStateFlow(0)
+    
     val documentUiModel: StateFlow<DocumentUiModel> =
-        _pageIds.map { ids ->
+        combine(_pageIds, _modificationCount) { ids, _ ->
             DocumentUiModel(
                 pageIds = ids,
                 imageLoader = ::getBitmap,
@@ -96,5 +100,11 @@ class MainViewModel(val imageRepository: ImageRepository, launchMode: LaunchMode
     fun handleImageCaptured(jpegBytes: ByteArray) {
         imageRepository.add(jpegBytes)
         _pageIds.value = imageRepository.imageIds()
+    }
+
+    fun replacePageContent(id: String, jpegBytes: ByteArray) {
+        imageRepository.replace(id, jpegBytes)
+        _pageIds.value = imageRepository.imageIds()
+        _modificationCount.update { it + 1 }
     }
 }

@@ -70,7 +70,9 @@ import org.fairscan.app.ui.screens.home.HomeViewModel
 import org.fairscan.app.ui.screens.settings.ExportFormat
 import org.fairscan.app.ui.screens.settings.SettingsScreen
 import org.fairscan.app.ui.screens.settings.SettingsViewModel
-import org.fairscan.app.ui.theme.FairScanTheme
+import org.fairscan.app.ui.theme.RedactedTheme
+import org.fairscan.app.ui.redaction.RedactionScreen
+import org.fairscan.app.ui.redaction.mergeRedactionWithBitmap
 import org.opencv.android.OpenCVLoader
 import java.io.File
 import java.util.UUID
@@ -82,7 +84,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initLibraries()
-        val appContainer = (application as FairScanApp).appContainer
+        val appContainer = (application as RedactedApp).appContainer
         val launchMode = resolveLaunchMode(intent)
         sessionDir = when (launchMode) {
             LaunchMode.NORMAL -> filesDir
@@ -120,7 +122,7 @@ class MainActivity : ComponentActivity() {
             CollectExportEvents(context, exportViewModel)
             CollectAboutEvents(context, aboutViewModel)
 
-            FairScanTheme {
+            RedactedTheme {
                 val navigation = navigation(viewModel, launchMode)
                 when (val screen = currentScreen) {
                     is Screen.Main.Home -> {
@@ -166,7 +168,37 @@ class MainActivity : ComponentActivity() {
                             onDeleteImage =  { id -> viewModel.deletePage(id) },
                             onRotateImage = { id, clockwise -> viewModel.rotateImage(id, clockwise) },
                             onPageReorder = { id, newIndex -> viewModel.movePage(id, newIndex) },
+                            onRedactClick = navigation.toRedactionScreen,
                         )
+                    }
+                    is Screen.Main.Redaction -> {
+                        val bitmap = viewModel.getBitmap(document.pageId(screen.pageIndex))
+                        if (bitmap != null) {
+                            RedactionScreen(
+                                bitmap = bitmap,
+                                onDone = { redactionState, canvasSize ->
+                                    lifecycleScope.launch(Dispatchers.IO) {
+                                        val redactedBytes = mergeRedactionWithBitmap(
+                                            bitmap,
+                                            redactionState,
+                                            canvasSize
+                                        )
+                                        // Replace the original image with the redacted one
+                                        viewModel.replacePageContent(
+                                            document.pageId(screen.pageIndex),
+                                            redactedBytes
+                                        )
+                                    }
+                                    viewModel.navigateTo(Screen.Main.Document(screen.pageIndex))
+                                },
+                                onCancel = {
+                                    viewModel.navigateTo(Screen.Main.Document(screen.pageIndex))
+                                }
+                            )
+                        } else {
+                            // If bitmap is null, go back to document screen
+                            viewModel.navigateTo(Screen.Main.Document())
+                        }
                     }
                     is Screen.Main.Export -> {
                         ExportScreenWrapper(
@@ -234,6 +266,7 @@ class MainActivity : ComponentActivity() {
             onChooseDirectoryClick = { launcher.launch(null) },
             onResetExportDirClick = { settingsViewModel.setExportDirUri(null) },
             onExportFormatChanged = { format -> settingsViewModel.setExportFormat(format) },
+            onScanBlackAndWhiteChanged = { enabled -> settingsViewModel.setScanBlackAndWhite(enabled) },
             onBack = nav.back,
         )
     }
@@ -400,6 +433,7 @@ class MainActivity : ComponentActivity() {
         toHomeScreen = { viewModel.navigateTo(Screen.Main.Home) },
         toCameraScreen = { viewModel.navigateTo(Screen.Main.Camera) },
         toDocumentScreen = { viewModel.navigateTo(Screen.Main.Document()) },
+        toRedactionScreen = { pageIndex -> viewModel.navigateTo(Screen.Main.Redaction(pageIndex)) },
         toExportScreen = { viewModel.navigateTo(Screen.Main.Export) },
         toAboutScreen = { viewModel.navigateTo(Screen.Overlay.About) },
         toLibrariesScreen = { viewModel.navigateTo(Screen.Overlay.Libraries) },

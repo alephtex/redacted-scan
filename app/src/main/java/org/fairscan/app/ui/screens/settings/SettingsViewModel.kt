@@ -23,6 +23,7 @@ import org.fairscan.app.AppContainer
 data class SettingsUiState(
     val exportDirUri: String? = null,
     val exportFormat: ExportFormat = ExportFormat.PDF,
+    val scanBlackAndWhite: Boolean = false,
 )
 
 class SettingsViewModel(container: AppContainer) : ViewModel() {
@@ -32,10 +33,12 @@ class SettingsViewModel(container: AppContainer) : ViewModel() {
     val uiState = combine(
         repo.exportDirUri,
         repo.exportFormat,
-    ) { dir, format ->
+        repo.scanBlackAndWhite,
+    ) { dir, format, blackAndWhite ->
         SettingsUiState(
             exportDirUri = dir,
             exportFormat = format,
+            scanBlackAndWhite = blackAndWhite,
         )
     }.stateIn(
         viewModelScope,
@@ -52,6 +55,12 @@ class SettingsViewModel(container: AppContainer) : ViewModel() {
     fun setExportFormat(format: ExportFormat) {
         viewModelScope.launch {
             repo.setExportFormat(format)
+        }
+    }
+
+    fun setScanBlackAndWhite(enabled: Boolean) {
+        viewModelScope.launch {
+            repo.setScanBlackAndWhite(enabled)
         }
     }
 }

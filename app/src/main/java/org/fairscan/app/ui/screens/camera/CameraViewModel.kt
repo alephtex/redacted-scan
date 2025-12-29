@@ -15,8 +15,12 @@
 package org.fairscan.app.ui.screens.camera
 
 import android.graphics.Bitmap
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.Paint
 import android.util.Log
 import androidx.camera.core.ImageProxy
+import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -49,6 +53,7 @@ sealed interface CameraEvent {
 class CameraViewModel(appContainer: AppContainer): ViewModel() {
 
     private val imageSegmentationService = appContainer.imageSegmentationService
+    private val settingsRepository = appContainer.settingsRepository
 
     private val _events = MutableSharedFlow<CameraEvent>()
     val events = _events.asSharedFlow()
@@ -151,10 +156,31 @@ class CameraViewModel(appContainer: AppContainer): ViewModel() {
             }
             if (quad != null) {
                 val resizedQuad = quad.scaledTo(mask.width, mask.height, bitmap.width, bitmap.height)
-                corrected = extractDocumentFromBitmap(bitmap, resizedQuad, rotationDegrees, mask)
+                var result = extractDocumentFromBitmap(bitmap, resizedQuad, rotationDegrees, mask)
+                
+                // Apply black & white conversion if setting is enabled
+                if (settingsRepository.getScanBlackAndWhiteSync()) {
+                    result = convertToGrayscale(result)
+                }
+                
+                corrected = result
             }
         }
         return@withContext corrected
+    }
+    
+    private fun convertToGrayscale(bitmap: Bitmap): Bitmap {
+        val grayscaleBitmap = createBitmap(bitmap.width, bitmap.height, Bitmap.Config.ARGB_8888)
+        val colorMatrix = ColorMatrix().apply {
+            setSaturation(0f)
+        }
+        val paint = Paint().apply {
+            colorFilter = ColorMatrixColorFilter(colorMatrix)
+        }
+        grayscaleBitmap.applyCanvas {
+            drawBitmap(bitmap, 0f, 0f, paint)
+        }
+        return grayscaleBitmap
     }
 
     fun addProcessedImage(quality: Int = 75) {

@@ -11,27 +11,27 @@
         android:pathData="m103.28,64.29 l173.8,-1.24 66.21,66.82 2.36,241.28 -243.55,2.47z"
         android:strokeLineJoin="round"
         android:strokeWidth="36.7123"
-        android:fillColor="#dfe8ce"
-        android:strokeColor="#7ef09f"/>
+        android:fillColor="#1a1a1a"
+        android:strokeColor="#333333"/>
     <path
         android:pathData="m115.59,73.46 l158.54,-1.17 60.4,63.04 2.16,227.63 -222.17,2.33z"
         android:strokeLineJoin="round"
         android:strokeWidth="17.38"
-        android:fillColor="#ffffff"
-        android:strokeColor="#ffffff"/>
+        android:fillColor="#2a2a2a"
+        android:strokeColor="#2a2a2a"/>
     <path
         android:pathData="m146.52,252.82l74.71,0"
         android:strokeLineJoin="round"
         android:strokeWidth="22"
-        android:fillColor="#19c367"
-        android:strokeColor="#92d892"
+        android:fillColor="#666666"
+        android:strokeColor="#666666"
         android:strokeLineCap="round"/>
     <path
         android:pathData="M146.52,209.91L277.93,209.91"
         android:strokeLineJoin="round"
         android:strokeWidth="22"
-        android:fillColor="#19c367"
-        android:strokeColor="#92d892"
+        android:fillColor="#666666"
+        android:strokeColor="#666666"
         android:strokeLineCap="round"/>
     <path
         android:pathData="m15.21,99.06c0,-27.95 -2.99,-47.32 16.77,-67.08C51.74,12.21 71.11,15.21 99.06,15.21"

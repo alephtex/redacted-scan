@@ -76,7 +76,7 @@ import org.fairscan.app.ui.components.isLandscape
 import org.fairscan.app.ui.components.pageCountText
 import org.fairscan.app.ui.dummyNavigation
 import org.fairscan.app.ui.screens.settings.ExportFormat.PDF
-import org.fairscan.app.ui.theme.FairScanTheme
+import org.fairscan.app.ui.theme.RedactedTheme
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -450,7 +450,7 @@ fun PreviewExportScreenAfterSaveHorizontal() {
 
 @Composable
 fun ExportPreviewToCustomize(uiState: ExportUiState) {
-    FairScanTheme {
+    RedactedTheme {
         ExportScreen(
             filename = remember { mutableStateOf("Scan 2025-07-02 17.40.42") },
             onFilenameChange = {_->},

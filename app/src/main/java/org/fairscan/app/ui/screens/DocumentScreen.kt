@@ -33,6 +33,7 @@ import androidx.compose.material.icons.automirrored.filled.RotateLeft
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -65,7 +66,7 @@ import org.fairscan.app.ui.components.SecondaryActionButton
 import org.fairscan.app.ui.dummyNavigation
 import org.fairscan.app.ui.fakeDocument
 import org.fairscan.app.ui.state.DocumentUiModel
-import org.fairscan.app.ui.theme.FairScanTheme
+import org.fairscan.app.ui.theme.RedactedTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +78,7 @@ fun DocumentScreen(
     onDeleteImage: (String) -> Unit,
     onRotateImage: (String, Boolean) -> Unit,
     onPageReorder: (String, Int) -> Unit,
+    onRedactClick: ((Int) -> Unit)? = null,
 ) {
     // TODO Check how often images are loaded
     val showDeletePageDialog = rememberSaveable { mutableStateOf(false) }
@@ -117,11 +119,12 @@ fun DocumentScreen(
         },
     ) { modifier ->
         DocumentPreview(
-            document,
-            currentPageIndex,
-            { showDeletePageDialog.value = true },
-            onRotateImage,
-            modifier
+            document = document,
+            currentPageIndex = currentPageIndex,
+            onDeleteImage = { showDeletePageDialog.value = true },
+            onRotateImage = onRotateImage,
+            onRedactClick = onRedactClick ?: navigation.toRedactionScreen,
+            modifier = modifier
         )
         if (showDeletePageDialog.value) {
             ConfirmationDialog(
@@ -139,6 +142,7 @@ private fun DocumentPreview(
     currentPageIndex: MutableIntState,
     onDeleteImage: (String) -> Unit,
     onRotateImage: (String, Boolean) -> Unit,
+    onRedactClick: (Int) -> Unit,
     modifier: Modifier,
 ) {
     val imageId = document.pageId(currentPageIndex.intValue)
@@ -172,14 +176,24 @@ private fun DocumentPreview(
                 }
             }
             RotationButtons(imageId, onRotateImage, Modifier.align(Alignment.BottomCenter))
-            SecondaryActionButton(
-                Icons.Outlined.Delete,
-                contentDescription = stringResource(R.string.delete_page),
-                onClick = { onDeleteImage(imageId) },
+            // Delete and Redact buttons on the right side
+            Column(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp)
-            )
+                    .align(Alignment.CenterEnd)
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                SecondaryActionButton(
+                    Icons.Outlined.Delete,
+                    contentDescription = stringResource(R.string.delete_page),
+                    onClick = { onDeleteImage(imageId) }
+                )
+                SecondaryActionButton(
+                    Icons.Default.Edit,
+                    contentDescription = "Redact",
+                    onClick = { onRedactClick(currentPageIndex.intValue) }
+                )
+            }
             Text("${currentPageIndex.intValue + 1} / ${document.pageCount()}",
                 color = MaterialTheme.colorScheme.inverseOnSurface,
                 modifier = Modifier
@@ -236,7 +250,7 @@ private fun BottomBar(
 @Composable
 @Preview
 fun DocumentScreenPreview() {
-    FairScanTheme {
+    RedactedTheme {
         DocumentScreen(
             fakeDocument(
                 listOf(1, 2).map { "gallica.bnf.fr-bpt6k5530456s-$it.jpg" }.toImmutableList(),

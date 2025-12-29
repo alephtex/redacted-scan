@@ -33,7 +33,7 @@ import org.fairscan.app.ui.screens.settings.SettingsRepository
 import org.fairscan.app.ui.screens.settings.SettingsViewModel
 import java.io.File
 
-class FairScanApp : Application() {
+class RedactedApp : Application() {
     lateinit var appContainer: AppContainer
 
     override fun onCreate() {

@@ -21,6 +21,7 @@ sealed class Screen {
         object Home : Main()
         object Camera : Main()
         data class Document(val initialPage: Int = 0) : Main()
+        data class Redaction(val pageIndex: Int) : Main()
         object Export : Main()
     }
     sealed class Overlay : Screen() {
@@ -34,6 +35,7 @@ data class Navigation(
     val toHomeScreen: () -> Unit,
     val toCameraScreen: () -> Unit,
     val toDocumentScreen: () -> Unit,
+    val toRedactionScreen: (Int) -> Unit,
     val toExportScreen: () -> Unit,
     val toAboutScreen: () -> Unit,
     val toLibrariesScreen: () -> Unit,
@@ -73,6 +75,7 @@ data class NavigationState private constructor(val stack: List<Screen>, val root
             is Screen.Main.Home -> this // Back handled by system
             is Screen.Main.Camera -> copy(stack = listOf(Screen.Main.Home))
             is Screen.Main.Document -> copy(stack = listOf(Screen.Main.Camera))
+            is Screen.Main.Redaction -> copy(stack = listOf(Screen.Main.Document()))
             is Screen.Main.Export -> copy(stack = listOf(Screen.Main.Document()))
             is Screen.Overlay -> copy(stack = stack.dropLast(1))
         }

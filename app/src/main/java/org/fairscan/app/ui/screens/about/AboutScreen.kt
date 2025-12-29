@@ -71,7 +71,7 @@ import androidx.core.net.toUri
 import org.fairscan.app.BuildConfig
 import org.fairscan.app.R
 import org.fairscan.app.ui.components.BackButton
-import org.fairscan.app.ui.theme.FairScanTheme
+import org.fairscan.app.ui.theme.RedactedTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -299,7 +299,7 @@ fun CopyLogsButton(onClick: () -> Unit) {
 @Preview
 @Composable
 fun AboutScreenPreview() {
-    FairScanTheme {
+    RedactedTheme {
         AboutScreen(onBack = {}, onCopyLogs = {}, onViewLibraries = {})
     }
 }

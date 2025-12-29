@@ -15,11 +15,14 @@
 package org.fairscan.app.ui.screens.settings
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
 private val Context.dataStore by preferencesDataStore(name = "fairscan_settings")
 
@@ -27,6 +30,7 @@ class SettingsRepository(private val context: Context) {
 
     private val EXPORT_DIR_URI = stringPreferencesKey("export_dir_uri")
     private val EXPORT_FORMAT = stringPreferencesKey("export_format")
+    private val SCAN_BLACK_AND_WHITE = booleanPreferencesKey("scan_black_and_white")
 
     val exportDirUri: Flow<String?> =
         context.dataStore.data.map { prefs ->
@@ -42,6 +46,15 @@ class SettingsRepository(private val context: Context) {
             }
         }
 
+    val scanBlackAndWhite: Flow<Boolean> =
+        context.dataStore.data.map { prefs ->
+            prefs[SCAN_BLACK_AND_WHITE] ?: false
+        }
+
+    fun getScanBlackAndWhiteSync(): Boolean = runBlocking {
+        scanBlackAndWhite.first()
+    }
+
     suspend fun setExportDirUri(uri: String?) {
         context.dataStore.edit { prefs ->
             if (uri == null) {
@@ -55,6 +68,12 @@ class SettingsRepository(private val context: Context) {
     suspend fun setExportFormat(format: ExportFormat) {
         context.dataStore.edit { prefs ->
             prefs[EXPORT_FORMAT] = format.name
+        }
+    }
+
+    suspend fun setScanBlackAndWhite(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[SCAN_BLACK_AND_WHITE] = enabled
         }
     }
 }

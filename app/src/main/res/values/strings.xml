@@ -1,8 +1,8 @@
 <resources>
     <string name="about">About</string>
     <string name="add_page">Add page</string>
-    <string name="app_name" translatable="false">FairScan</string>
-    <string name="app_tagline">A simple and respectful application to scan your documents.</string>
+    <string name="app_name" translatable="false">Redacted</string>
+    <string name="app_tagline">Document scanner with redaction capabilities.</string>
     <string name="back">Back</string>
     <string name="camera_permission_denied">Camera permission was denied</string>
     <string name="camera_permission_rationale">The app requires camera access to scan documents. Captured images are stored only on this device and will be deleted when you close the current document.</string>

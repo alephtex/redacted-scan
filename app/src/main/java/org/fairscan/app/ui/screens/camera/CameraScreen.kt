@@ -93,7 +93,7 @@ import org.fairscan.app.ui.components.MyScaffold
 import org.fairscan.app.ui.components.pageCountText
 import org.fairscan.app.ui.dummyNavigation
 import org.fairscan.app.ui.fakeDocument
-import org.fairscan.app.ui.theme.FairScanTheme
+import org.fairscan.app.ui.theme.RedactedTheme
 
 const val CAPTURED_IMAGE_DISPLAY_DURATION = 1500L
 const val ANIMATION_DURATION = 200
@@ -472,7 +472,7 @@ fun CameraScreenPreviewInLandscapeMode() {
 
 @Composable
 private fun ScreenPreview(captureState: CaptureState, rotationDegrees: Float = 0f) {
-    FairScanTheme {
+    RedactedTheme {
         val thumbnailCoords = remember { mutableStateOf(Offset.Zero) }
         CameraScreenScaffold(
             cameraPreview = {

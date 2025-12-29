@@ -38,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -51,7 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import org.fairscan.app.R
 import org.fairscan.app.ui.components.BackButton
-import org.fairscan.app.ui.theme.FairScanTheme
+import org.fairscan.app.ui.theme.RedactedTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +61,7 @@ fun SettingsScreen(
     onChooseDirectoryClick: () -> Unit,
     onResetExportDirClick: () -> Unit,
     onExportFormatChanged: (ExportFormat) -> Unit,
+    onScanBlackAndWhiteChanged: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
     BackHandler { onBack() }
@@ -76,6 +78,7 @@ fun SettingsScreen(
             onChooseDirectoryClick,
             onResetExportDirClick,
             onExportFormatChanged,
+            onScanBlackAndWhiteChanged,
             modifier = Modifier.padding(paddingValues))
     }
 }
@@ -86,6 +89,7 @@ private fun SettingsContent(
     onChooseDirectoryClick: () -> Unit,
     onResetExportDirClick: () -> Unit,
     onExportFormatChanged: (ExportFormat) -> Unit,
+    onScanBlackAndWhiteChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -135,6 +139,38 @@ private fun SettingsContent(
             )
             Text("JPEG")
         }
+
+        Spacer(Modifier.height(32.dp))
+
+        Text("Scan options", style = MaterialTheme.typography.titleLarge)
+
+        Spacer(Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Black & White scan")
+            Switch(
+                checked = uiState.scanBlackAndWhite,
+                onCheckedChange = onScanBlackAndWhiteChanged
+            )
+        }
+        
+        Spacer(Modifier.height(48.dp))
+        
+        // Credits section
+        Text(
+            "Redaction feature by alephtex",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            "for jk.bagba",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
@@ -201,12 +237,13 @@ fun SettingsScreenPreviewWithDir() {
 
 @Composable
 fun SettingsScreenPreview(uiState: SettingsUiState) {
-    FairScanTheme {
+    RedactedTheme {
         SettingsScreen(
             uiState,
             onChooseDirectoryClick = {},
             onResetExportDirClick = {},
             onExportFormatChanged = {},
+            onScanBlackAndWhiteChanged = {},
             onBack = {}
         )
     }

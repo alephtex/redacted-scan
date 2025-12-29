@@ -85,6 +85,14 @@ class ImageRepository(
         saveMetadata()
     }
 
+    fun replace(id: String, bytes: ByteArray) {
+        val file = File(scanDir, id)
+        if (!file.exists()) return
+        file.writeBytes(bytes)
+        writeThumbnail(file)
+        // No need to update fileNames or metadata since the ID stays the same
+    }
+
     val idRegex = Regex("([0-9]+)(-(90|180|270))?\\.jpg")
 
     fun rotate(id: String, clockwise: Boolean) {
