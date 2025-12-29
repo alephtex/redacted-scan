@@ -133,6 +133,12 @@ fun AboutContent(
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        Text(
+            "\"Redact better than the government did with the Epstein files\"",
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary
+        )
 
         HorizontalDivider()
 
@@ -140,28 +146,23 @@ fun AboutContent(
             Text(BuildConfig.VERSION_NAME)
         }
 
-        Section(title = stringResource(R.string.developer)) {
-            Text("Pierre-Yves Nicolas")
+        Section(title = "Redaction Feature") {
+            Text("by alephtex")
+            Text("for jk.bagba")
+        }
+
+        Section(title = "Original Scanner") {
+            Text("Based on FairScan")
+            Text("by Pierre-Yves Nicolas")
         }
 
         Section(title = stringResource(R.string.contact)) {
-            val emailAddress = "contact@fairscan.org"
-            ContactLink(
-                icon = Icons.Default.Email,
-                text = emailAddress,
-                onClick = {
-                    val intent = Intent(Intent.ACTION_SENDTO).apply {
-                        data = "mailto:$emailAddress".toUri()
-                    }
-                    context.startActivity(intent)
-                }
-            )
-            val websiteUrl = "https://fairscan.org"
+            val githubUrl = "https://github.com/alephtex/redacted-scan"
             ContactLink(
                 icon = Icons.Default.Language,
-                text = websiteUrl,
+                text = "GitHub Repository",
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, websiteUrl.toUri())
+                    val intent = Intent(Intent.ACTION_VIEW, githubUrl.toUri())
                     context.startActivity(intent)
                 }
             )

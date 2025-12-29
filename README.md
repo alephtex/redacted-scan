@@ -8,6 +8,8 @@
   <b>Scan. Redact. Protect.</b>
   <br/>
   A document scanner with built-in redaction capabilities.
+  <br/><br/>
+  <i>"Redact better than the government did with the Epstein files"</i>
 </p>
 
 <p align="center">
