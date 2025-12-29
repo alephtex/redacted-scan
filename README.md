@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="metadata/en-US/images/icon.png" alt="Redacted icon" width="120" />
+  <img src="metadata/en-US/images/icon.png?v=2" alt="Redacted icon" width="120" />
 </p>
 
 <h1 align="center">🔴 REDACTED</h1>
